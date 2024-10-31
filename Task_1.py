@@ -1,54 +1,71 @@
 class HashTable:
-    def __init__(self):
-        self.size = 10 
-        self.table = [[] for _ in range(self.size)]  
+    def __init__(self, size=10):
+        self.size = size
+        self.table = [[] for _ in range(self.size)] 
 
-    def hash_function(self, key):
-        return hash(key) % self.size  
+    def _hash_function(self, key):
+        """Хеш-функція, яка визначає індекс ключа"""
+        return hash(key) % self.size
 
     def insert(self, key, value):
-        index = self.hash_function(key)
-        bucket = self.table[index]
-        
-        # Перевіряємо, чи існує вже ключ в хеш-таблиці
-        for i, kv in enumerate(bucket):
-            k, v = kv
-            if k == key:
-                bucket[i] = (key, value)  
+        """Вставка пари ключ-значення у таблицю"""
+        index = self._hash_function(key)
+        for kvp in self.table[index]:
+            if kvp[0] == key:  
+                kvp[1] = value
                 return
-        
-        # Якщо ключ не знайдено, додаємо новий ключ-значення
-        bucket.append((key, value))
+        self.table[index].append([key, value]) 
 
-    def search(self, key):
-        index = self.hash_function(key)
-        bucket = self.table[index]
-        
-        # Шукаємо значення за ключем
-        for k, v in bucket:
-            if k == key:
-                return v
-        
-        # Якщо ключ не знайдений, повертаємо None
-        return None
+    def get(self, key):
+        """Отримання значення за ключем"""
+        index = self._hash_function(key)
+        for kvp in self.table[index]:
+            if kvp[0] == key:
+                return kvp[1] 
+        return None  
 
     def delete(self, key):
-        index = self.hash_function(key)
-        bucket = self.table[index]
-        
-        # Шукаємо ключ у відповідному "відрі" (списку)
-        for i, kv in enumerate(bucket):
-            k, v = kv
-            if k == key:
-                del bucket[i] 
-                print(f"Ключ '{key}' успішно видалений.")
+        """Видалення пари ключ-значення за ключем"""
+        index = self._hash_function(key)
+        for kvp in self.table[index]:
+            if kvp[0] == key:
+                self.table[index].remove(kvp) 
+                print(f"Ключ '{key}' було успішно видалено.")
                 return
-        
-        # Якщо ключ не знайдений
         print(f"Ключ '{key}' не знайдено.")
-    
+
     def display(self):
+        """Виведення всієї таблиці"""
         for i, bucket in enumerate(self.table):
-            print(f"Index {i}: {bucket}")
+            if bucket:
+                print(f"Індекс {i}: {bucket}")
+            else:
+                print(f"Індекс {i}: порожньо")
+
+# Приклад використання
+
+# Створюємо таблицю хешування
+hash_table = HashTable(size=10)
+
+# Вставляємо ключі та значення
+hash_table.insert("apple", 10)
+hash_table.insert("banana", 20)
+hash_table.insert("orange", 30)
+hash_table.insert("grape", 40)
+
+# Виводимо таблицю до видалення
+print("Таблиця хешування до видалення:")
+hash_table.display()
+
+# Видаляємо ключ 'banana'
+hash_table.delete("banana")
+
+# Виводимо таблицю після видалення
+print("\nТаблиця хешування після видалення ключа 'banana':")
+hash_table.display()
+
+# Видаляємо ключ, якого немає
+hash_table.delete("pear")
+
 
 
